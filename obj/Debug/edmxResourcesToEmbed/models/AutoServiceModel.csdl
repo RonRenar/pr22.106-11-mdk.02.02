@@ -1,0 +1,217 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="Model" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+  <EntityType Name="ActivityType">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int64" Nullable="false" />
+    <Property Name="TypeOfActivity" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="Workers" Relationship="Self.FK_Workers_ActivityType" FromRole="ActivityType" ToRole="Workers" />
+  </EntityType>
+  <EntityType Name="mail">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="email" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="userid" Type="Int64" Nullable="false" />
+    <Property Name="C2auth" Type="Boolean" />
+    <NavigationProperty Name="Users" Relationship="Self.FK_mail_Users1" FromRole="mail" ToRole="Users" />
+  </EntityType>
+  <EntityType Name="material_list">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="Name" Type="String" MaxLength="1" FixedLength="false" Unicode="false" />
+    <Property Name="Quantity" Type="Int32" />
+    <NavigationProperty Name="order_list" Relationship="Self.FK_order_list_material_list" FromRole="material_list" ToRole="order_list" />
+    <NavigationProperty Name="Supply_list" Relationship="Self.FK_Supply_list_material_list" FromRole="material_list" ToRole="Supply_list" />
+  </EntityType>
+  <EntityType Name="order_list">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="product_id" Type="Int64" />
+    <Property Name="material_id" Type="Int64" />
+    <NavigationProperty Name="material_list" Relationship="Self.FK_order_list_material_list" FromRole="order_list" ToRole="material_list" />
+    <NavigationProperty Name="product_list" Relationship="Self.FK_order_list_product_list" FromRole="order_list" ToRole="product_list" />
+  </EntityType>
+  <EntityType Name="product_list">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="Name" Type="String" MaxLength="1" FixedLength="false" Unicode="false" />
+    <NavigationProperty Name="order_list" Relationship="Self.FK_order_list_product_list" FromRole="product_list" ToRole="order_list" />
+  </EntityType>
+  <EntityType Name="Supply_list">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="Date" Type="DateTime" Precision="0" />
+    <Property Name="IdMaterial" Type="Int64" />
+    <Property Name="quantity" Type="Int32" />
+    <Property Name="IdResponsibleWorker" Type="Int64" />
+    <NavigationProperty Name="material_list" Relationship="Self.FK_Supply_list_material_list" FromRole="Supply_list" ToRole="material_list" />
+    <NavigationProperty Name="Workers" Relationship="Self.FK_Supply_list_Workers" FromRole="Supply_list" ToRole="Workers" />
+  </EntityType>
+  <EntityType Name="sysdiagrams">
+    <Key>
+      <PropertyRef Name="diagram_id" />
+    </Key>
+    <Property Name="name" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="principal_id" Type="Int32" Nullable="false" />
+    <Property Name="diagram_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="version" Type="Int32" />
+    <Property Name="definition" Type="Binary" MaxLength="Max" FixedLength="false" />
+  </EntityType>
+  <EntityType Name="Users">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="Login" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+    <Property Name="Password" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+    <Property Name="WorkerId" Type="Int64" />
+    <NavigationProperty Name="mail" Relationship="Self.FK_mail_Users1" FromRole="Users" ToRole="mail" />
+    <NavigationProperty Name="Workers" Relationship="Self.FK_Users_Workers" FromRole="Users" ToRole="Workers" />
+  </EntityType>
+  <EntityType Name="Workers">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="FirstName" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+    <Property Name="LastName" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+    <Property Name="ActivityTypeID" Type="Int64" />
+    <NavigationProperty Name="ActivityType" Relationship="Self.FK_Workers_ActivityType" FromRole="Workers" ToRole="ActivityType" />
+    <NavigationProperty Name="Supply_list" Relationship="Self.FK_Supply_list_Workers" FromRole="Workers" ToRole="Supply_list" />
+    <NavigationProperty Name="Users" Relationship="Self.FK_Users_Workers" FromRole="Workers" ToRole="Users" />
+  </EntityType>
+  <Association Name="FK_Workers_ActivityType">
+    <End Role="ActivityType" Type="Self.ActivityType" Multiplicity="0..1" />
+    <End Role="Workers" Type="Self.Workers" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="ActivityType">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="Workers">
+        <PropertyRef Name="ActivityTypeID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_mail_Users1">
+    <End Role="Users" Type="Self.Users" Multiplicity="1" />
+    <End Role="mail" Type="Self.mail" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Users">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="mail">
+        <PropertyRef Name="userid" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_order_list_material_list">
+    <End Role="material_list" Type="Self.material_list" Multiplicity="0..1" />
+    <End Role="order_list" Type="Self.order_list" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="material_list">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="order_list">
+        <PropertyRef Name="material_id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Supply_list_material_list">
+    <End Role="material_list" Type="Self.material_list" Multiplicity="0..1" />
+    <End Role="Supply_list" Type="Self.Supply_list" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="material_list">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="Supply_list">
+        <PropertyRef Name="IdMaterial" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_order_list_product_list">
+    <End Role="product_list" Type="Self.product_list" Multiplicity="0..1" />
+    <End Role="order_list" Type="Self.order_list" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="product_list">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="order_list">
+        <PropertyRef Name="product_id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Supply_list_Workers">
+    <End Role="Workers" Type="Self.Workers" Multiplicity="0..1" />
+    <End Role="Supply_list" Type="Self.Supply_list" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Workers">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="Supply_list">
+        <PropertyRef Name="IdResponsibleWorker" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Users_Workers">
+    <End Role="Workers" Type="Self.Workers" Multiplicity="0..1" />
+    <End Role="Users" Type="Self.Users" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Workers">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="Users">
+        <PropertyRef Name="WorkerId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <EntityContainer Name="AutoServiceEntities" annotation:LazyLoadingEnabled="true">
+    <EntitySet Name="ActivityType" EntityType="Self.ActivityType" />
+    <EntitySet Name="mail" EntityType="Self.mail" />
+    <EntitySet Name="material_list" EntityType="Self.material_list" />
+    <EntitySet Name="order_list" EntityType="Self.order_list" />
+    <EntitySet Name="product_list" EntityType="Self.product_list" />
+    <EntitySet Name="Supply_list" EntityType="Self.Supply_list" />
+    <EntitySet Name="sysdiagrams" EntityType="Self.sysdiagrams" />
+    <EntitySet Name="Users" EntityType="Self.Users" />
+    <EntitySet Name="Workers" EntityType="Self.Workers" />
+    <AssociationSet Name="FK_Workers_ActivityType" Association="Self.FK_Workers_ActivityType">
+      <End Role="ActivityType" EntitySet="ActivityType" />
+      <End Role="Workers" EntitySet="Workers" />
+    </AssociationSet>
+    <AssociationSet Name="FK_mail_Users1" Association="Self.FK_mail_Users1">
+      <End Role="Users" EntitySet="Users" />
+      <End Role="mail" EntitySet="mail" />
+    </AssociationSet>
+    <AssociationSet Name="FK_order_list_material_list" Association="Self.FK_order_list_material_list">
+      <End Role="material_list" EntitySet="material_list" />
+      <End Role="order_list" EntitySet="order_list" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Supply_list_material_list" Association="Self.FK_Supply_list_material_list">
+      <End Role="material_list" EntitySet="material_list" />
+      <End Role="Supply_list" EntitySet="Supply_list" />
+    </AssociationSet>
+    <AssociationSet Name="FK_order_list_product_list" Association="Self.FK_order_list_product_list">
+      <End Role="product_list" EntitySet="product_list" />
+      <End Role="order_list" EntitySet="order_list" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Supply_list_Workers" Association="Self.FK_Supply_list_Workers">
+      <End Role="Workers" EntitySet="Workers" />
+      <End Role="Supply_list" EntitySet="Supply_list" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Users_Workers" Association="Self.FK_Users_Workers">
+      <End Role="Workers" EntitySet="Workers" />
+      <End Role="Users" EntitySet="Users" />
+    </AssociationSet>
+  </EntityContainer>
+</Schema>
